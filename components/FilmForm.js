@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { FaStar } from "react-icons/fa"
 
-export default function FilmForm(){
+export default function FilmForm({ films, setFilms }){
 
 const [title,setTitle] = useState("")
 const [genre,setGenre] = useState("")
@@ -51,10 +51,9 @@ headers:{
 body:JSON.stringify(newFilm)
 })
 
-const data = await res.json()
-console.log(data)
+const createdFilm = await res.json()
 
-location.reload()
+setFilms([createdFilm, ...films])
 
 }
 

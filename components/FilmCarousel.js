@@ -31,7 +31,7 @@ className="min-w-[180px] bg-gray-800 rounded-lg overflow-hidden hover:scale-105 
 >
 
 <img
-src={film.poster}
+src={film.poster || "/noimage.png"}
 alt={film.title}
 className="h-64 w-full object-cover"
 />

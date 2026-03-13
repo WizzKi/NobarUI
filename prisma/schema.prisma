@@ -7,7 +7,7 @@ datasource db {
 }
 
 model Film {
-  id          BigInt   @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   title       String
   date        String?
   genre       String?
