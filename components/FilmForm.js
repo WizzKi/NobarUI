@@ -27,39 +27,32 @@ setPoster(URL.createObjectURL(file))
 }
 
 
-const addFilm = async ()=>{
+const addFilm = async () => {
 
 if(!title) return
 
 const newFilm = {
-
-id: Date.now(),
-
 title,
 genre,
 date,
 comment,
 poster,
-
 riskiRating:Number(riskiRating),
 rapaRating:Number(rapaRating),
-
 riskiSad:Number(riskiSad),
 rapaSad:Number(rapaSad)
-
 }
 
-await fetch("/api/films",{
-
+const res = await fetch("/api/films",{
 method:"POST",
-
 headers:{
 "Content-Type":"application/json"
 },
-
 body:JSON.stringify(newFilm)
-
 })
+
+const data = await res.json()
+console.log(data)
 
 location.reload()
 
