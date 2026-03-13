@@ -3,13 +3,12 @@
 import { useState } from "react"
 import { FaStar } from "react-icons/fa"
 
-export default function FilmForm({films,setFilms}){
+export default function FilmForm(){
 
 const [title,setTitle] = useState("")
 const [genre,setGenre] = useState("")
 const [date,setDate] = useState("")
 const [comment,setComment] = useState("")
-
 const [poster,setPoster] = useState(null)
 
 const [riskiRating,setRiskiRating] = useState(0)
@@ -21,35 +20,48 @@ const [rapaSad,setRapaSad] = useState(5)
 
 const handlePoster = (e)=>{
 const file = e.target.files[0]
+
 if(file){
 setPoster(URL.createObjectURL(file))
 }
 }
 
 
-const addFilm = ()=>{
+const addFilm = async ()=>{
 
 if(!title) return
 
 const newFilm = {
-  id: Date.now(),
-  title,
-  date,
-  genre,
-  comment,
-  poster,
-  riskiRating: Number(riskiRating),
-  rapaRating: Number(rapaRating),
-  riskiSad: Number(riskiSad),
-  rapaSad: Number(rapaSad)
+
+id: Date.now(),
+
+title,
+genre,
+date,
+comment,
+poster,
+
+riskiRating:Number(riskiRating),
+rapaRating:Number(rapaRating),
+
+riskiSad:Number(riskiSad),
+rapaSad:Number(rapaSad)
+
 }
 
-setFilms([...films,newFilm])
+await fetch("/api/films",{
 
-setTitle("")
-setGenre("")
-setComment("")
-setPoster(null)
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify(newFilm)
+
+})
+
+location.reload()
 
 }
 
@@ -61,11 +73,13 @@ return(
 <div className="flex gap-1 text-yellow-400 text-xl">
 
 {[1,2,3,4,5,6,7,8,9,10].map((star)=>(
+
 <FaStar
 key={star}
 className={`cursor-pointer ${star<=rating?"":"opacity-30"}`}
 onClick={()=>setRating(star)}
 />
+
 ))}
 
 </div>
@@ -185,7 +199,7 @@ type="range"
 min="1"
 max="10"
 value={riskiSad}
-onChange={(e)=>setRiskiSad(e.target.value)}
+onChange={(e)=>setRiskiSad(Number(e.target.value))}
 className="w-full"
 />
 
@@ -202,7 +216,7 @@ type="range"
 min="1"
 max="10"
 value={rapaSad}
-onChange={(e)=>setRapaSad(e.target.value)}
+onChange={(e)=>setRapaSad(Number(e.target.value))}
 className="w-full"
 />
 
@@ -223,4 +237,5 @@ Tambah Film
 </div>
 
 )
+
 }

@@ -14,18 +14,10 @@ export default function Home(){
     const [films,setFilms] = useState([])
 
     useEffect(()=>{
-
-        const data = localStorage.getItem("films")
-        const storedFilms = data ? JSON.parse(data) : []
-        setFilms(storedFilms)
-
+        fetch("/api/films")
+        .then(res=>res.json())
+        .then(data=>setFilms(data))
     },[])
-
-    useEffect(()=>{
-
-        localStorage.setItem("films",JSON.stringify(films))
-
-    },[films])
 
 return (
 
