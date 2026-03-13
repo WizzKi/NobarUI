@@ -15,7 +15,8 @@ export default function Home(){
 
     useEffect(()=>{
 
-        const storedFilms = JSON.parse(localStorage.getItem("films")) || []
+        const data = localStorage.getItem("films")
+        const storedFilms = data ? JSON.parse(data) : []
         setFilms(storedFilms)
 
     },[])
