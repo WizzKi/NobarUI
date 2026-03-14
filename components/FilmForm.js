@@ -9,7 +9,9 @@ const [title,setTitle] = useState("")
 const [genre,setGenre] = useState("")
 const [date,setDate] = useState("")
 const [comment,setComment] = useState("")
-const [poster,setPoster] = useState(null)
+const [poster,setPoster] = useState("")
+
+const [results,setResults] = useState([])
 
 const [riskiRating,setRiskiRating] = useState(0)
 const [rapaRating,setRapaRating] = useState(0)
@@ -18,14 +20,26 @@ const [riskiSad,setRiskiSad] = useState(5)
 const [rapaSad,setRapaSad] = useState(5)
 
 
-const handlePoster = (e)=>{
-const file = e.target.files[0]
+/* SEARCH FILM FROM TMDB */
 
-if(file){
-setPoster(URL.createObjectURL(file))
-}
+const searchFilm = async (value)=>{
+
+setTitle(value)
+
+if(value.length < 2){
+setResults([])
+return
 }
 
+const res = await fetch(`/api/search-film?q=${value}`)
+const data = await res.json()
+
+setResults(data)
+
+}
+
+
+/* ADD FILM */
 
 const addFilm = async () => {
 
@@ -57,6 +71,8 @@ setFilms([createdFilm, ...films])
 
 }
 
+
+/* STAR RATING */
 
 const StarRating = ({rating,setRating})=>{
 
@@ -99,17 +115,11 @@ return(
 Poster Film
 </label>
 
-<input
-type="file"
-onChange={handlePoster}
-className="bg-gray-700 p-2 rounded w-full"
-/>
-
 {poster &&(
 
 <img
 src={poster}
-className="mt-4 rounded-xl shadow-lg w-48"
+className="rounded-xl shadow-lg w-48"
 />
 
 )}
@@ -123,11 +133,60 @@ className="mt-4 rounded-xl shadow-lg w-48"
 
 <input
 type="text"
-placeholder="Judul Film"
+placeholder="Cari Judul Film..."
 value={title}
-onChange={(e)=>setTitle(e.target.value)}
+onChange={(e)=>searchFilm(e.target.value)}
 className="bg-gray-700 p-3 rounded"
 />
+
+
+{/* SEARCH RESULT */}
+
+{results.length > 0 && (
+
+<div className="bg-gray-700 rounded max-h-60 overflow-y-auto">
+
+{results.map((movie)=>{
+
+const posterUrl = movie.poster_path
+? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+: ""
+
+return(
+
+<div
+key={movie.id}
+onClick={()=>{
+
+setTitle(movie.title)
+setPoster(posterUrl)
+setDate(movie.release_date)
+setResults([])
+
+}}
+className="p-2 hover:bg-gray-600 cursor-pointer flex gap-3 items-center"
+>
+
+{posterUrl && (
+
+<img
+src={posterUrl}
+className="w-10 rounded"
+/>
+
+)}
+
+<span>{movie.title}</span>
+
+</div>
+
+)
+
+})}
+
+</div>
+
+)}
 
 <input
 type="text"

@@ -13,16 +13,20 @@ const [loading,setLoading] = useState(true)
 
 useEffect(()=>{
 
-const films = JSON.parse(localStorage.getItem("films")) || []
+const loadFilm = async ()=>{
 
-const found = films.find(
-f => String(f.id) === String(id)
-)
+const res = await fetch(`/api/films/${id}`)
+const data = await res.json()
 
-setFilm(found)
+setFilm(data)
 setLoading(false)
 
+}
+
+loadFilm()
+
 },[id])
+
 
 if(loading){
 return(
@@ -72,11 +76,11 @@ className="w-[340px] rounded-xl shadow-2xl"
 </h1>
 
 <p className="text-gray-400 mb-2">
- {film.genre}
+{film.genre}
 </p>
 
 <p className="text-gray-400 mb-6">
- {film.date}
+{film.date}
 </p>
 
 <div className="flex gap-4 mb-8">

@@ -1,11 +1,48 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 export default function FilmRankingManual({films}){
 
 const [ranking,setRanking] = useState([])
 const [selected,setSelected] = useState("")
+
+/* load ranking dari database */
+
+useEffect(()=>{
+
+const rankedFilms = films
+.filter(f => f.ranking !== null)
+.sort((a,b)=> a.ranking - b.ranking)
+
+setRanking(rankedFilms)
+
+},[films])
+
+
+/* save ranking ke database */
+
+const saveRanking = async (newRank)=>{
+
+setRanking(newRank)
+
+const payload = newRank.map((film,index)=>({
+id:film.id,
+rank:index+1
+}))
+
+await fetch("/api/ranking",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({ranking:payload})
+})
+
+}
+
+
+/* tambah film ke ranking */
 
 const addRanking = ()=>{
 
@@ -17,10 +54,15 @@ if(!film) return
 
 if(ranking.find(r => r.id == film.id)) return
 
-setRanking([...ranking,film])
+const newRank = [...ranking,film]
+
+saveRanking(newRank)
 
 setSelected("")
 }
+
+
+/* move up */
 
 const moveUp = (index)=>{
 
@@ -32,9 +74,12 @@ const item = newRank.splice(index,1)[0]
 
 newRank.splice(index-1,0,item)
 
-setRanking(newRank)
+saveRanking(newRank)
 
 }
+
+
+/* move down */
 
 const moveDown = (index)=>{
 
@@ -46,17 +91,21 @@ const item = newRank.splice(index,1)[0]
 
 newRank.splice(index+1,0,item)
 
-setRanking(newRank)
+saveRanking(newRank)
 
 }
+
+
+/* remove film */
 
 const removeFilm = (index)=>{
 
 const newRank = ranking.filter((_,i)=> i !== index)
 
-setRanking(newRank)
+saveRanking(newRank)
 
 }
+
 
 return(
 
@@ -90,12 +139,11 @@ className="bg-gray-700 p-3 rounded w-full"
 onClick={addRanking}
 className="bg-yellow-500 px-4 rounded font-semibold"
 >
-
 Tambah
-
 </button>
 
 </div>
+
 
 {/* podium top 3 */}
 
@@ -124,6 +172,7 @@ className="h-32 mx-auto rounded mb-2"
 ))}
 
 </div>
+
 
 {/* ranking list */}
 
